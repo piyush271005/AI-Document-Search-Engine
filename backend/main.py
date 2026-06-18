@@ -16,10 +16,10 @@ app = FastAPI(
     version="1.0.0"
 )
 
-# Configure CORS to allow frontend communication
+
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],  # For local development ease
+    allow_origins=["*"],  
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"]
@@ -28,7 +28,7 @@ app.add_middleware(
 @app.on_event("startup")
 async def on_startup():
     logger.info("Application starting up... Initializing indices.")
-    # Initialize BM25 from existing database contents
+   
     hybrid_retriever.initialize_from_db()
 
 @app.get("/")
