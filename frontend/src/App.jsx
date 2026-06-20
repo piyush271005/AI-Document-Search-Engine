@@ -24,7 +24,6 @@ function App() {
     pages_crawled: 0,
     queue_size: 0,
     total_chunks: 0,
-    redis_connected: false,
     crawled_urls: []
   });
   
@@ -623,10 +622,8 @@ function App() {
                   <span className="stat-value">{crawlStatus.total_chunks}</span>
                 </div>
                 <div className="stat-item">
-                  <span className="stat-label">Redis Status</span>
-                  <span className="stat-value" style={{color: crawlStatus.redis_connected ? 'var(--success)' : 'var(--warning)'}}>
-                    {crawlStatus.redis_connected ? 'Connected' : 'In-Memory Queue'}
-                  </span>
+                  <span className="stat-label">Queue Size</span>
+                  <span className="stat-value">{crawlStatus.queue_size}</span>
                 </div>
               </div>
 

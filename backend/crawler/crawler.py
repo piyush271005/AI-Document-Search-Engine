@@ -2,7 +2,6 @@ import asyncio
 import logging
 from urllib.parse import urlparse
 import httpx
-import redis
 from backend.config import settings
 from backend.parser.parser import DocParser
 
@@ -10,31 +9,19 @@ logger = logging.getLogger("crawler")
 logging.basicConfig(level=logging.INFO)
 
 class CrawlCoordinator:
-    """Manages crawl state, queue, and visited lists (Redis or Local fallback)."""
+    """Manages crawl state, queue, and visited lists using in-memory queues."""
     def __init__(self):
         self.is_crawling = False
         self.pages_crawled = []
         self.crawled_content = []  # Stores parsed pages: [{"url", "title", "blocks"}]
-        self.redis_conn = None
-        self.use_redis = False
         
-        # Local fallback queue & visited set
+        # Local queue & visited set
         self.local_queue = asyncio.Queue()
         self.local_visited = set()
         self.max_pages = 50
         self.limit_domain = True
         self.base_domain = ""
         self.start_url = ""
-
-        # Initialize Redis connection if possible
-        try:
-            self.redis_conn = redis.from_url(settings.REDIS_URL, socket_connect_timeout=1.0)
-            self.redis_conn.ping()
-            self.use_redis = True
-            logger.info("Successfully connected to Redis. Using Redis-backed Queue.")
-        except Exception as e:
-            logger.warning(f"Could not connect to Redis: {e}. Falling back to In-Memory Queue.")
-            self.use_redis = False
 
     def reset(self):
         self.is_crawling = False
@@ -47,63 +34,23 @@ class CrawlCoordinator:
                 self.local_queue.get_nowait()
             except asyncio.QueueEmpty:
                 break
-                
-        if self.use_redis and self.redis_conn:
-            try:
-                self.redis_conn.delete("crawler:queue")
-                self.redis_conn.delete("crawler:visited")
-            except Exception as e:
-                logger.error(f"Failed to clear Redis data: {e}")
 
     async def get_queue_size(self) -> int:
-        if self.use_redis and self.redis_conn:
-            try:
-                return self.redis_conn.llen("crawler:queue")
-            except Exception:
-                pass
         return self.local_queue.qsize()
 
     async def push_to_queue(self, url: str, depth: int):
         """Pushes (url, depth) to queue."""
-        item = f"{url}||{depth}"
-        if self.use_redis and self.redis_conn:
-            try:
-                # Add to queue only if not already visited
-                if not self.redis_conn.sismember("crawler:visited", url):
-                    self.redis_conn.rpush("crawler:queue", item)
-                return
-            except Exception as e:
-                logger.warning(f"Redis write error during push: {e}. Using local queue.")
-        
         if url not in self.local_visited:
             await self.local_queue.put((url, depth))
 
     async def pop_from_queue(self) -> tuple[str, int]:
         """Pops (url, depth) from queue. Returns None if empty."""
-        if self.use_redis and self.redis_conn:
-            try:
-                item = self.redis_conn.lpop("crawler:queue")
-                if item:
-                    decoded = item.decode("utf-8")
-                    url, depth_str = decoded.split("||")
-                    return url, int(depth_str)
-                return None
-            except Exception as e:
-                logger.warning(f"Redis read error during pop: {e}. Using local queue.")
-
         if not self.local_queue.empty():
             return await self.local_queue.get()
         return None
 
     def mark_visited(self, url: str) -> bool:
         """Marks a URL as visited. Returns True if it was NOT already visited."""
-        if self.use_redis and self.redis_conn:
-            try:
-                added = self.redis_conn.sadd("crawler:visited", url)
-                return added > 0
-            except Exception as e:
-                logger.warning(f"Redis error in mark_visited: {e}. Using local set.")
-                
         if url not in self.local_visited:
             self.local_visited.add(url)
             return True

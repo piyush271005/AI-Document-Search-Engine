@@ -145,7 +145,6 @@ async def get_status():
         pages_crawled=len(crawler_coordinator.pages_crawled),
         queue_size=q_size,
         total_chunks=total_chunks,
-        redis_connected=crawler_coordinator.use_redis,
         crawled_urls=crawler_coordinator.pages_crawled
     )
 

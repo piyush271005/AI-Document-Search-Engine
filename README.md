@@ -25,7 +25,7 @@ A production-grade semantic & keyword hybrid search engine for technical documen
 ---
 
 ## 🛠️ Tech Stack
-* **Backend**: FastAPI, HTTPX, BeautifulSoup4, ChromaDB, Sentence-Transformers, Rank-BM25, Redis.
+* **Backend**: FastAPI, HTTPX, BeautifulSoup4, ChromaDB, Sentence-Transformers, Rank-BM25.
 * **Frontend**: React + Vite, Vanilla CSS (Glassmorphic dark-theme, animated pipeline visualizer).
 * **Deployment**: Docker, Docker Compose.
 
@@ -70,7 +70,7 @@ Open `http://localhost:5173` in your browser.
 ---
 
 ## 🐳 Running with Docker
-To orchestrate the FastAPI backend, Nginx frontend, and a Redis queue container automatically:
+To orchestrate the FastAPI backend and Nginx frontend containers automatically:
 ```bash
 docker-compose up --build
 ```

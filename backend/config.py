@@ -11,8 +11,6 @@ class Settings(BaseSettings):
     # Storage and DB paths
     CHROMA_DB_DIR: str = str(BASE_DIR / "chroma_db")
     
-    # Redis configuration
-    REDIS_URL: str = "redis://localhost:6379/0"
     
     # LLM Settings & Keys
     OPENAI_API_KEY: str = ""

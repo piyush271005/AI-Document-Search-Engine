@@ -35,7 +35,6 @@ class StatusResponse(BaseModel):
     pages_crawled: int
     queue_size: int
     total_chunks: int
-    redis_connected: bool
     crawled_urls: List[str]
 
 class SettingsRequest(BaseModel):
