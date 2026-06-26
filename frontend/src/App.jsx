@@ -2,7 +2,9 @@ import React, { useState, useEffect, useRef } from 'react';
 import { DottedSurface } from './components/ui/dotted-surface';
 
 // API Base URL (FastAPI backend)
-const API_BASE = 'https://ai-documentation-baackend.onrender.com';
+const API_BASE = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1'
+  ? 'http://127.0.0.1:8000'
+  : 'https://ai-documentation-baackend.onrender.com';
 
 function App() {
   const [activeTab, setActiveTab] = useState('search');
