@@ -76,6 +76,8 @@ class CrawlCoordinator:
             if response.status_code != 200:
                 logger.warning(f"Failed to fetch {url}: Status code {response.status_code}")
                 return
+            
+            print(response)
                 
             # Double check content type is HTML
             content_type = response.headers.get("content-type", "")

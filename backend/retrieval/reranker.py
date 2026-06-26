@@ -12,7 +12,7 @@ def tokenize(text: str) -> list[str]:
 class HybridRetriever:
     def __init__(self):
         self.bm25 = None
-        self.corpus_chunks = []  # List of chunks mapping 1-to-1 with BM25 corpus
+        self.corpus_chunks = []  
         self.is_initialized = False
 
     def initialize_from_db(self):
@@ -25,7 +25,7 @@ class HybridRetriever:
                 return
                 
             logger.info(f"Loading {count} chunks from ChromaDB to initialize BM25 index...")
-            # Retrieve all documents
+            
             results = vector_store.collection.get(include=["documents", "metadatas"])
             
             self.corpus_chunks = []

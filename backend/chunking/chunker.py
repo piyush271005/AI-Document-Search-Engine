@@ -14,71 +14,96 @@ class Chunker:
         return hasher.hexdigest()
 
     def chunk_document(self, doc: Dict[str, Any]) -> List[Dict[str, Any]]:
-        """
-        Splits parsed document blocks into semantic chunks, keeping paragraph/sentence coherence.
-        
-        Args:
-            doc: Parsed document dictionary containing:
-                 - "url": str
-                 - "title": str
-                 - "blocks": List[Dict[str, Any]] (each block has "type", "text", "header")
-                 
-        Returns:
-            List[Dict[str, Any]]: List of chunks with metadata.
-        """
         url = doc.get("url", "")
         title = doc.get("title", "")
         blocks = doc.get("blocks", [])
-        
+
         chunks = []
         current_chunk_text = []
         current_chunk_size = 0
         current_header = None
-        
+
         for block in blocks:
             block_type = block.get("type")
             block_text = block.get("text", "").strip()
             block_header = block.get("header")
-            
+
             if not block_text:
                 continue
-                
-            # Update current section header context
+
+            # Handle headings
             if block_type == "heading":
-                current_header = block_text
-                # A heading starts a new context, so flush previous chunk if it has content
+                # Flush previous section
                 if current_chunk_text:
-                    self._flush_chunk(chunks, current_chunk_text, url, title, current_header)
+                    self._flush_chunk(
+                        chunks,
+                        current_chunk_text,
+                        url,
+                        title,
+                        current_header
+                    )
                     current_chunk_text = []
                     current_chunk_size = 0
+
+                # Update to the new section
+                current_header = block_text
                 continue
 
-            # Code blocks are preserved as separate chunks if they are large
+            # Handle code blocks separately
             if block_type == "code_block":
                 if current_chunk_text:
-                    self._flush_chunk(chunks, current_chunk_text, url, title, current_header)
+                    self._flush_chunk(
+                        chunks,
+                        current_chunk_text,
+                        url,
+                        title,
+                        current_header
+                    )
                     current_chunk_text = []
                     current_chunk_size = 0
-                # Store code block separately
-                self._flush_chunk(chunks, [block_text], url, title, block_header or current_header)
+
+                self._flush_chunk(
+                    chunks,
+                    [block_text],
+                    url,
+                    title,
+                    block_header or current_header
+                )
                 continue
 
-            # Check if appending this block exceeds target size
             block_len = len(block_text)
-            if current_chunk_size > 0 and (current_chunk_size + block_len > self.target_chunk_size):
-                self._flush_chunk(chunks, current_chunk_text, url, title, block_header or current_header)
+
+            # Check chunk size
+            if (
+                current_chunk_size > 0
+                and current_chunk_size + block_len > self.target_chunk_size
+            ):
+                self._flush_chunk(
+                    chunks,
+                    current_chunk_text,
+                    url,
+                    title,
+                    current_header
+                )
+
                 current_chunk_text = [block_text]
                 current_chunk_size = block_len
+
             else:
                 current_chunk_text.append(block_text)
                 current_chunk_size += block_len
-                
-        # Flush remaining text
-        if current_chunk_text:
-            self._flush_chunk(chunks, current_chunk_text, url, title, current_header)
-            
-        return chunks
 
+        # Flush remaining content
+        if current_chunk_text:
+            self._flush_chunk(
+                chunks,
+                current_chunk_text,
+                url,
+                title,
+                current_header
+            )
+
+        return chunks
     def _flush_chunk(self, chunks_list: List[Dict[str, Any]], text_list: List[str], url: str, title: str, header: str):
         full_text = "\n\n".join(text_list)
         if len(full_text.strip()) < 30:  # Skip trivial chunks

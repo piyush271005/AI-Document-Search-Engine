@@ -1,7 +1,8 @@
 import React, { useState, useEffect, useRef } from 'react';
+import { DottedSurface } from './components/ui/dotted-surface';
 
 // API Base URL (FastAPI backend)
-const API_BASE = 'http://127.0.0.1:8000';
+const API_BASE = 'https://ai-documentation-baackend.onrender.com';
 
 function App() {
   const [activeTab, setActiveTab] = useState('search');
@@ -321,6 +322,7 @@ function App() {
 
   return (
     <div className="app-container">
+      <DottedSurface theme={theme} />
       {/* Sidebar navigation */}
       <aside className="sidebar">
         <div className="logo-section">
