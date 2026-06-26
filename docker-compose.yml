@@ -5,7 +5,7 @@ services:
     build:
       context: ./backend
       dockerfile: Dockerfile
-    container_name: doc_search_backend
+    container_name: docsense_backend
     ports:
       - "8000:8000"
     environment:
@@ -19,7 +19,7 @@ services:
     build:
       context: ./frontend
       dockerfile: Dockerfile
-    container_name: doc_search_frontend
+    container_name: docsense_frontend
     ports:
       - "3000:80"
     depends_on:

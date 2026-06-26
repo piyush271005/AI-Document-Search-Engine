@@ -328,8 +328,8 @@ function App() {
       {/* Sidebar navigation */}
       <aside className="sidebar">
         <div className="logo-section">
-          <div className="logo-icon">AG</div>
-          <div className="logo-text">AI Doc Search</div>
+          <div className="logo-icon">ds</div>
+          <div className="logo-text">docsense</div>
         </div>
         
         <nav className="nav-links">
@@ -382,7 +382,7 @@ function App() {
         <header className="header-row">
           <div>
             <span style={{fontSize: '0.85rem', color: 'var(--text-secondary)', textTransform: 'uppercase', letterSpacing: '0.05em'}}>SYSTEM DESIGN & RAG</span>
-            <h1 style={{fontSize: '1.8rem', fontWeight: '700', marginTop: '2px'}}>AI Documentation Search Engine</h1>
+            <h1 style={{fontSize: '1.8rem', fontWeight: '700', marginTop: '2px'}}>docsense</h1>
           </div>
           
           <button className="theme-toggle" onClick={toggleTheme}>

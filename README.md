@@ -1,4 +1,4 @@
-# AI Documentation Search Engine
+# docsense - AI Documentation Search Engine
 
 A production-grade semantic & keyword hybrid search engine for technical documentation websites. The system utilizes BFS crawling, BeautifulSoup parsing, paragraph-aware text chunking, `sentence-transformers` vector embeddings, ChromaDB, BM25 keyword matching, Reciprocal Rank Fusion (RRF), and modular LLM integrations (Gemini, OpenAI, Ollama, and a local Mock provider).
 
